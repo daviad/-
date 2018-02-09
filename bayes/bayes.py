@@ -1,3 +1,4 @@
+#https://github.com/wywywy01/machinelearninginaction-master
 from numpy import *
 
 def loadDataSet():
@@ -69,7 +70,7 @@ def classifyNB(vec2Classify,p0Vec,p1Vec,pClass1):
 
 def textParse(bigString):
 	import re
-	listOfTokens = re.split(r'\w*',bigString)
+	listOfTokens = re.split(r'\W*',bigString)
 	return [tok.lower() for tok in listOfTokens if len(tok) > 2]
 
 def spamTest():
@@ -88,7 +89,7 @@ def spamTest():
 	testSet = []
 	for i in range(10):
 		randIndex = int(random.uniform(0,len(trainingSet)))
-		testSet.append(trainingSet(randIndex))
+		testSet.append(trainingSet[randIndex])
 		del(trainingSet[randIndex])
 	trainMat = []; trainClasses = []
 	for docIndex in trainingSet:
@@ -128,6 +129,6 @@ def testingNB():
 	print testEntry,'classified as:',classifyNB(thisDoc,p0v,p1v,pAb)
 
 
-testingNB()
-
-
+# testingNB()
+# print textParse('AVC, sdf, eset cc123')
+spamTest()
