@@ -16,6 +16,9 @@ def add_layer(inputs,in_size,out_size,activation_function=None):
 x_data = np.linspace(-1,1,300,dtype=np.float32)[:,np.newaxis]
 noise = np.random.normal(0,0.05,x_data.shape).astype(np.float32)
 y_data = np.square(x_data) - 0.5 + noise
+# print (x_data.shape)
+# print((np.linspace(-1,1,300,dtype=np.float32)).shape)
+# print((np.linspace(-1,1,300,dtype=np.float32)))
 
 # plt.scatter(x_data,y_data)
 # plt.show()
@@ -65,6 +68,7 @@ for i in range(1000):
         prediction_value = sess.run(prediction, feed_dict={xs: x_data})
         # plot the prediction
         lines = ax.plot(x_data, prediction_value, 'r-', lw=5)
+        print 
         plt.pause(1)
 
 
