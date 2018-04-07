@@ -5,6 +5,20 @@ import numpy as np
 import tensorflow as tf  
 import tensorflow.python.platform  
   
+
+from tensorflow.examples.tutorials.mnist import input_data
+
+import tensorflow as tf
+
+flags = tf.app.flags
+FLAGS = flags.FLAGS
+flags.DEFINE_string('data_dir', '/tmp/data/', 'Directory for storing data') # 把数据放在/tmp/data文件夹中
+print(FLAGS.data_dir)
+mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)   # 读取数据集
+print(mnist)
+
+
+
 NUM_CLASSES = 2  
   
 IMAGE_SIZE = 28  
