@@ -20,6 +20,8 @@ from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 import os
 
+ckptDir = "./ckpt/simple/"
+
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 flags.DEFINE_string('data_dir', './data/', 'Directory for storing data') # 把数据放在/tmp/data文件夹中
@@ -61,10 +63,10 @@ tf.global_variables_initializer().run()
 # except IOError:
 #     print ("没有训练好的模型")
 
-if os.path.exists("./ckpt/checkpoint"):
+if os.path.exists(ckptDir+"/checkpoint"):
 	print("use saved model")
 	sess.run(accuracy,feed_dict={x:mnist.test.images,y:mnist.test.labels}); #必须run一次才能restore，否则即使try 也会crash
-	saver.restore(sess, "./ckpt/simple")	
+	saver.restore(sess, ckptDir)	
 
 #通过判断文件是否存在的方式会crash 不知道的什么原因	
 # sess.run()
@@ -76,5 +78,5 @@ for i in range(1000):
     train.run({x: batch_xs, y: batch_ys})
 print(sess.run(accuracy,feed_dict={x:mnist.test.images,y:mnist.test.labels}))
 
-saver.save(sess, "./ckpt/simple") #file_name如果不存在的话，会自动创建
+saver.save(sess, ckptDir) #file_name如果不存在的话，会自动创建
 
