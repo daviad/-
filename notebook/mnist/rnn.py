@@ -23,7 +23,7 @@ training_iters = 1 #遍历次数
 batch_size = 128  #自己给定的。
 
 n_inputs = 28   # MNIST data input (img shape: 28*28)  28列
-n_steps = 28    # time steps  28行
+n_steps = 28    # time steps  28行 这里必须是28.因为dynamic_rnn将n_steps看作一个整体。这里正好是一张图片
 n_hidden_units = 128   # neurons in hidden layer  自己给定的
 n_classes = 10      # MNIST classes (0-9 digits)
 
@@ -65,6 +65,7 @@ def RNN(X, weights, biases):
     X_in = tf.matmul(X, weights['in']) + biases['in']
     # X_in ==> (128 batch, 28 steps, 128 hidden) 三维
     X_in = tf.reshape(X_in, [-1, n_steps, n_hidden_units]) 
+
 
     # cell
     ##########################################
