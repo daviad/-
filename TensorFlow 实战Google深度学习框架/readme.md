@@ -52,6 +52,8 @@
 ### softmax
 * 在 tensorflow 中用softmax将神经网络的输出变成一个概率分布。之后就可以用交叉熵得到损失函数了。
 
+### 与分类问题不同，回归问题解决的事对具体数值的预测。比如房价的预测。解决回归问题的神经网络一般只有一个输出节点，这个节点的输出技术预测值（房价具体事多少）。对于回归问题，最常用的损失函数是 **均方误差**。 
+
 ### tensorflow 可以自定义损失函数
 * todo：
 
@@ -76,11 +78,21 @@
 * 为了避免过拟合，常用的方法是正则化。正则化的思想是在损失函数中加入刻画模型复杂度的指标。一般模型复杂度只由权重W决定。L1，L2都限制权重的大小。
 	* L1 正则化 w  让参数变得稀疏  就说很多参数变为了0
 	* L2 正则化 W^2
-    ***正则化目前没有理解后续再理解***
+	* 对于线性回归模型，使用L1正则化的模型建叫做Lasso回归，使用L2正则化的模型叫做Ridge回归（岭回归）
+	* L1正则化可以产生稀疏权值矩阵，即产生一个稀疏模型，可以用于特征选择
+    * L2正则化可以防止模型过拟合（overfitting）；一定程度上，L1也可以防止过拟合
+    * 这里讲的比较清楚 [机器学习中正则化项L1和L2的直观理解](https://blog.csdn.net/jinping_shi/article/details/52433975)
+* Dropout
+	* L1、L2正则化是通过改动代价函数来实现的，而Dropout则是通过改动神经网络本身来实现的，它是在训练网络时用的一种技巧（trike）。
+* 数据集扩增（data augmentation）能够在原始数据上做些改动，得到很多其它的数据，以图片数据集举例，能够做各种变换，如：      
+	* 将原始图片旋转一个小角度
+	* 加入随机噪声
+	* 一些有弹性的畸变（elastic distortions）。论文《Best practices for convolutional neural networks applied to visual document analysis》对MNIST做了各种变种扩增。
+	* 截取（crop）原始图片的一部分。
 
 ### 滑动平均模型
-想想滑动窗口 想想平均值 期望的含义。
-
+* 想想滑动窗口 想想平均值 期望的含义。
+* [参考这里](https://www.cnblogs.com/cloud-ken/p/7521609.html)
 
 
 https://blog.csdn.net/jiaoyangwm/article/category/7439149
