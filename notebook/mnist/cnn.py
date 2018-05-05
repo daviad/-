@@ -118,7 +118,8 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy) # 使用adam�
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) # 计算准确度
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 sess.run(tf.global_variables_initializer()) # 变量初始化
-for i in range(1000):
+# for i in range(1000):
+for i in range(1):
     batch = mnist.train.next_batch(50)
     if i%100 == 0:
         print(batch[1].shape)
@@ -130,3 +131,32 @@ for i in range(1000):
 print("test accuracy %g"%accuracy.eval(feed_dict={
     x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 
+
+# 我们先来看看数据是什么样的
+img1 = mnist.train.images[1]
+label1 = mnist.train.labels[1]
+print(label1)  # 所以这个是数字   的图片
+print("img_data shape = {shape}".format(shape=img1.shape))  # 我们需要把它转为 28 * 28 的矩阵
+print("img_data shape",img1.shape)
+img1.shape = [28, 28]
+
+import matplotlib.pyplot as plt
+plt.subplot(5, 8, 34)
+plt.imshow(img1, cmap='gray')
+
+
+# 首先应该把 img1 转为正确的shape (None, 784)
+X_img = img1.reshape([-1, 784])
+y_img = mnist.train.labels[1].reshape([-1, 10])
+# 我们要看 Conv1 的结果，即 h_conv1
+result = h_conv1.eval(feed_dict={x: X_img, y_: y_img, keep_prob: 1.0})
+print(result.shape)
+print(type(result))
+
+for _ in range(32):
+    show_img = result[:,:,:,_]
+    show_img.shape = [28, 28]
+    plt.subplot(5, 8, _ + 1)
+    plt.imshow(show_img, cmap='gray')
+    plt.axis('off')
+plt.show()
