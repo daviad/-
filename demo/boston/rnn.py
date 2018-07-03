@@ -170,7 +170,7 @@ if __name__ == '__main__':
     sess.run(tf.global_variables_initializer())
     # relocate to the local dir and run this line to view it on Chrome (http://0.0.0.0:6006/):
     # $ tensorboard --logdir='logs'
-    for j in range(200):#训练200次
+    for j in range(1):#训练200次
         pred_res=None
         for i in range(20):#把整个数据分为20个时间段
             seq, res = get_batch_boston()
