@@ -2,9 +2,10 @@ from mxnet.contrib.ndarray import MultiBoxTarget
 from mxnet import nd
 from mxnet.contrib.ndarray import MultiBoxPrior
 from mxnet import gluon
+import mxnet
 
 def training_targets(default_anchors, class_predicts, labels):
-    class_predicts = nd.transpose(class_predicts, axex=(0.2,1))
+    class_predicts = nd.transpose(class_predicts, axes=(0,2,1))
     z = MultiBoxTarget(*[default_anchors, labels,class_predicts])
     box_target = z[0]  # 预设框偏移量 (x, y, width, height)
     box_mask = z[1]  # box_mask用来把负类的偏移量置零，因为背景不需要位置！
@@ -38,3 +39,5 @@ class SmoothL1Loss(gluon.loss.Loss):
 box_loss = SmoothL1Loss()
 print(box_loss)
 
+cls_metric = mxnet.metric.Accuracy()
+box_metric = mxnet.metric.MAE()  # measure absolute difference between prediction and target

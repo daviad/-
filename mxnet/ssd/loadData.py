@@ -21,14 +21,19 @@ def load_data_pikachu(batch_size, edge_size=256):
         shuffle=False)
     return train_iter, val_iter
 
+
 batch_size = 32
 edge_size = 256
-train_iter, _ = load_data_pikachu(batch_size, edge_size)
-batch = train_iter.next()
+train_data, test_data = load_data_pikachu(batch_size, edge_size)
+# batch = train_data.next()
 # print(batch.data[0].shape, batch.label[0].shape)
-print(batch)
+class_name = ['pikachu']
+num_class = 1
+
+
+# print(batch)
 # def get_iterators(data_shape,batch_size):
-    # class_name = ['picachu']
+    # class_name = ['pikachu']
     # num_class = len(class_name)
     # train_iter = image.ImageDetIter(
     #     batch_size=batch_size,
@@ -54,20 +59,20 @@ print(batch)
 # train_data, test_data, class_names, num_class = get_iterators(data_shape, batch_size)
 
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-img = batch.data[0][0].asnumpy()  # 取第一批数据中的第一张，转成numpy
-img = img.transpose((1,2,0))  # 交换下通道的顺序
-# img += np.array([123,117,104])
-img = img.astype(np.uint8)  # 图片应该用0-255的范围
-# 在图上画出真实标签的方框
-for label in batch.label[0][0].asnumpy():
-    if label[0] < 0:
-        break
-    print(label)
-    xmin, ymin, xmax, ymax = [int(x *edge_size) for x in label[1:5]]
-    rect = plt.Rectangle((xmin,ymin),xmax - xmin, ymax - ymin, fill=False,edgecolor=(1,0,0),linewidth=3)
-    plt.gca().add_patch(rect)
-plt.imshow(img)
-plt.show()
+# import numpy as np
+# import matplotlib.pyplot as plt
+#
+# img = batch.data[0][0].asnumpy()  # 取第一批数据中的第一张，转成numpy
+# img = img.transpose((1,2,0))  # 交换下通道的顺序
+# # img += np.array([123,117,104])
+# img = img.astype(np.uint8)  # 图片应该用0-255的范围
+# # 在图上画出真实标签的方框
+# for label in batch.label[0][0].asnumpy():
+#     if label[0] < 0:
+#         break
+#     print(label)
+#     xmin, ymin, xmax, ymax = [int(x *edge_size) for x in label[1:5]]
+#     rect = plt.Rectangle((xmin,ymin),xmax - xmin, ymax - ymin, fill=False,edgecolor=(1,0,0),linewidth=3)
+#     plt.gca().add_patch(rect)
+# plt.imshow(img)
+# plt.show()

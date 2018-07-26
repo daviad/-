@@ -24,7 +24,7 @@ def down_sample(num_filters):
 
 
 def flatten_prediction(pred):
-    return nd.flatten(nd.transpose(pred, axex=(0, 2, 3, 1)))
+    return nd.flatten(nd.transpose(pred, axes=(0, 2, 3, 1)))
 
 
 def concat_predictions(preds):
@@ -65,10 +65,10 @@ def toy_ssd_forward(x, body, downsamples, class_preds, box_preds, sizes, ratios)
     predicted_classes = []
 
     for i in range(5):
-        default_anchors.append(MultiBoxPrior(x,sizes=size[i], ratios=ratios[i]))
-        predicted_boxes.append(flatten_prediction(box_preds[i]))
-        predicted_classes.append(flatten_prediction(class_preds[i]))
-        if  i < 3:
+        default_anchors.append(MultiBoxPrior(x,sizes=sizes[i], ratios=ratios[i]))
+        predicted_boxes.append(flatten_prediction(box_preds[i](x)))
+        predicted_classes.append(flatten_prediction(class_preds[i](x)))
+        if i < 3:
             x = downsamples[i](x)
         elif i == 3:
             # 最后一层可以简单地用全局Pooling
@@ -86,7 +86,7 @@ class ToySSD(gluon.Block):
         self.num_classes = num_class
 
         with self.name_scope():
-            self.body, self.downsamples, self.class_preds, self.box_preds = toy_ssd_model(4, num_classes)
+            self.body, self.downsamples, self.class_preds, self.box_preds = toy_ssd_model(4, self.num_classes)
 
     def forward(self, x):
         default_anchors, predicted_classes, predicted_boxes = toy_ssd_forward(x, self.body, self.downsamples,
@@ -103,11 +103,11 @@ class ToySSD(gluon.Block):
         return anchors, class_preds, box_preds
 
 
-# 新建一个2个正类的SSD网络
-net = ToySSD(2)
-net.initialize()
-x = nd.zeros((1, 3, 256, 256))
-default_anchors, class_predictions, box_predictions = net(x)
-print('Outputs:', 'anchors', default_anchors.shape, 'class prediction', class_predictions.shape, 'box prediction', box_predictions.shape)
-
+# # 新建一个2个正类的SSD网络
+# net = ToySSD(2)
+# net.initialize()
+# x = nd.zeros((1, 3, 256, 256))
+# default_anchors, class_predictions, box_predictions = net(x)
+# print('Outputs:', 'anchors', default_anchors.shape, 'class prediction', class_predictions.shape, 'box prediction', box_predictions.shape)
+# print('ok')
 
