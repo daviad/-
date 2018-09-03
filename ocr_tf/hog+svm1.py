@@ -1,83 +1,123 @@
 import cv2
 import os
 import numpy as np
+import time
 
-# 创建 路径 键值对
-trainPath = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set'
-labelPathDic = {}
-fileNames = os.listdir(trainPath)
-for fileName in fileNames:
-    # print(fileName)
-    if fileName == "letters":
-        pass
-    elif fileName == ".DS_Store":
-        pass
-    elif fileName == "chinese-characters":
-        pass
-    else:
-        dirlist = os.listdir(os.path.join(trainPath, fileName))
-        labelPathDic[fileName] = list(map(lambda y : os.path.join(trainPath, fileName, y),
-                                     (filter(lambda x: x != ".DS_Store" ,dirlist))))
+class HogSvm(object):
+    def __init__(self, train_path, test_path):
+        self.train_path = train_path
+        self.test_path = test_path
+        self.label_path_dic = {}
+        self.label_hog_dic = {}
+        self.svm = None
 
-# print(labelPathDic)
+    # 创建 路径 键值对
+    def build_path_label_dic(self, path):
+        for file_name in os.listdir(path):
+            if file_name == "letters":
+                pass
+            elif file_name == ".DS_Store":
+                pass
+            elif file_name == "chinese-characters":
+                pass
+            else:
+                self.label_path_dic[file_name] = list(map(lambda y: os.path.join(path, file_name, y),
+                                                          (filter(lambda x: x != '.DS_Store',
+                                                                  os.listdir(os.path.join(path, file_name))))))
 
+    def build_hog(self, src):
+        img = cv2.imread(src)
+        # Hog
+        # 1.设置一些参数
+        win_size = (16, 20)
+        win_stride = (16, 20)
+        block_size = (8, 10)
+        block_stride = (4, 5)
+        cell_size = (4, 5)
+        n_bins = 9
 
-def builidHog(src):
-    img = cv2.imread(src)
-    # Hog
-    # 1.设置一些参数
-    winSize = (30, 60)
-    blockSize = (10, 20)
-    blockStride = (5, 10)
-    cellSize = (5, 5)
-    nbins = 9
-    winStride = (30, 60)
-
-    # 2.创建hog
-    hog = cv2.HOGDescriptor(winSize, blockSize, blockStride, cellSize, nbins)
-    # 调用,hist是一个特征向量,维数可以算出来
-    hist = hog.compute(img, winStride, padding=(0,0))
-    # print(hist)
-    return hist.T
-
-
-# 创建 hog 键值对
-hogDic = {}
-for key,value in labelPathDic.items():
-       hogDic[key] = np.array(list(map(builidHog,value)))
+        # 2.创建hog
+        hog = cv2.HOGDescriptor(win_size, block_size, block_stride, cell_size, n_bins)
+        hist = hog.compute(img, winStride=win_stride, padding=(0, 0))
+        return hist.T.tolist()[0]  # 当矩阵是1 * n维的时候，经常会有tolist()[0]
 
 
-# print(hogDic)
+    # 创建 hog 键值对
+    def build_hog_label_dic(self):
+        for key, values in self.label_path_dic.items():
+            self.label_hog_dic[key] = map(self.build_hog, values)  # np.array(list(map(builidHog,value)))
 
-# 创建TrainData
-def buildTrainData():
-    data = []
-    label = []
-    for key, value in hogDic.items():
-        for v in value:
-            data.append(v)
-            label.append(key)
-    return np.array(data), np.array(label)
-#
-# SVM
-# 创建，设置参数
-svm = cv2.ml.SVM_create()
-svm.setType(cv2.ml.SVM_C_SVC)
-svm.setKernel(cv2.ml.SVM_RBF)
-svm.setC(1)
-svm.setGamma(0.00055556)
+    # 创建TrainData
+    def build_train_data(self):
+        data = []
+        label = []
+        for key, value in self.label_hog_dic.items():
+            for v in value:
+                data.append(v)
+                label.append(key)
+        return data, label
 
-# 训练
-X, Y = buildTrainData()
-trainDataSet = cv2.ml.TrainData_create(X, cv2.ml.ROW_SAMPLE, Y)
-svm.train(trainDataSet)
+    # SVM
+    # 创建，设置参数
+    def config_svm(self):
+        self.svm = cv2.ml.SVM_create()
+        self.svm.setType(cv2.ml.SVM_C_SVC)
+        self.svm.setKernel(cv2.ml.SVM_RBF)
+        self.svm.setC(1)
+        self.svm.setGamma(0.00055556)
 
-# 保存
-svm.save('svm.xml')
-#
-# # 调用
-# svm1 = cv2.ml.SVM_load('svm.xml')
-#
-# # 预测
-# p = svm.predict(des) # p[1][0][0]才是label
+    # 训练
+    def train(self):
+        print('create train data...')
+        self.build_path_label_dic(self.train_path)
+        self.build_hog_label_dic()
+        x, y = self.build_train_data()
+        x = np.array(x, dtype=np.float32)
+        y = np.array(y, dtype=np.int32)
+        print('train svm...')
+        start = time.clock()
+        self.config_svm()
+        train_data_set = cv2.ml.TrainData_create(x, cv2.ml.ROW_SAMPLE, y)
+        self.svm.train(train_data_set)
+        # 保存
+        self.svm.save('svm.xml')
+        end = time.clock()
+        print('Running time: %s min' % (end - start))
+
+    def predict(self, src):
+        _svm = cv2.ml.SVM_load('svm.xml')
+        des = self.build_hog(src)
+        des = np.array(des, dtype=np.float32)
+        p = _svm.predict(des.reshape(1, -1))
+        print(p[1][0][0])
+
+    def test(self):
+        print('create test data...')
+        self.build_path_label_dic(self.test_path)
+        self.build_hog_label_dic()
+        x, y = self.build_train_data()
+        x = np.array(x, dtype=np.float32)
+        y = np.array(y, dtype=np.int32)
+        print('test svm...')
+        start = time.clock()
+        self.svm = cv2.ml.SVM_load('svm.xml')
+        # 预测
+        p = self.svm.predict(x)
+        result = p[1]
+        count = 0
+        for i in range(0, result.size):
+            if int(result[i][0]) == y[0]:
+                count = count + 1
+
+        precise = float(count)/float(result.size)
+        print('precise:', precise)
+        end = time.clock()
+        print('Running time: %s min' % (end - start))
+        # p[1][0][0]才是label
+
+
+hogSVM = HogSvm('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/', '/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/')
+hogSVM.train()
+# hogSVM.predict('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/0/1509806985_268_7_new_warped1.bmp')
+hogSVM.test()
 
