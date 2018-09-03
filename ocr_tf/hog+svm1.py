@@ -41,6 +41,9 @@ class HogSvm(object):
         hist = hog.compute(img, winStride=win_stride, padding=(0, 0))
         return hist.T.tolist()[0]  # 当矩阵是1 * n维的时候，经常会有tolist()[0]
 
+        # img2 = np.reshape(img, [1, -1]).tolist()[0]
+        # return img2
+
 
     # 创建 hog 键值对
     def build_hog_label_dic(self):
@@ -62,7 +65,7 @@ class HogSvm(object):
     def config_svm(self):
         self.svm = cv2.ml.SVM_create()
         self.svm.setType(cv2.ml.SVM_C_SVC)
-        self.svm.setKernel(cv2.ml.SVM_RBF)
+        self.svm.setKernel(cv2.ml.SVM_LINEAR)
         self.svm.setC(1)
         self.svm.setGamma(0.00055556)
 
@@ -82,7 +85,7 @@ class HogSvm(object):
         # 保存
         self.svm.save('svm.xml')
         end = time.clock()
-        print('Running time: %s min' % (end - start))
+        print('Running time: %.2f min' % ((end - start)/60))
 
     def predict(self, src):
         _svm = cv2.ml.SVM_load('svm.xml')
@@ -106,18 +109,18 @@ class HogSvm(object):
         result = p[1]
         count = 0
         for i in range(0, result.size):
-            if int(result[i][0]) == y[0]:
+            if int(result[i][0]) == y[i]:
                 count = count + 1
 
         precise = float(count)/float(result.size)
         print('precise:', precise)
         end = time.clock()
-        print('Running time: %s min' % (end - start))
+        print('Running time: %.2f min' % ((end - start)/60.0))
         # p[1][0][0]才是label
 
 
-hogSVM = HogSvm('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/', '/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/')
+hogSVM = HogSvm('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/', '/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/validation-set/')
 hogSVM.train()
-# hogSVM.predict('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/0/1509806985_268_7_new_warped1.bmp')
+hogSVM.predict('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/26/1509808379_364_3_new_warped3.bmp')
 hogSVM.test()
 

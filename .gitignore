@@ -106,3 +106,4 @@ ENV/
 # pycharm
 .idea
 /mxnet/ssd/data
+/ocr_tf/svm.xml
