@@ -1,5 +1,33 @@
 import tensorflow as tf
+import os
+import numpy
 
+# 创建 路径 键值对
+def build_path_label_dic(self, path):
+    label_path_dic = {}
+    for file_name in os.listdir(path):
+        if file_name == "letters":
+            pass
+        elif file_name == ".DS_Store":
+            pass
+        elif file_name == "chinese-characters":
+            pass
+        else:
+            label_path_dic[file_name] = list(map(lambda y: os.path.join(path, file_name, y),
+                                                      (filter(lambda x: x != '.DS_Store',
+                                                              os.listdir(os.path.join(path, file_name))))))
+    return label_path_dic
+
+
+def build_path_label_pair(self, path):
+    label_path_dic = self.build_path_label_dic()
+    data = []
+    label = []
+    for key, values in label_path_dic.items():
+        for v in values:
+            data.append(v)
+            label.append(key)
+    return data, label
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape=shape, stddev=0.1)
@@ -62,3 +90,5 @@ for i in range(1000):
             x:batch[0], y_:batch[1], keep_prob:1.0
         })
     train_step.run(feed_dic={x:batch[0], y_:batch[1], keep_prob:0.5})
+
+

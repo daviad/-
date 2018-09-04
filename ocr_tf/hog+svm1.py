@@ -119,8 +119,8 @@ class HogSvm(object):
         # p[1][0][0]才是label
 
 
-hogSVM = HogSvm('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/', '/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/validation-set/')
+hogSVM = HogSvm('/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set/', '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/validation-set/')
 hogSVM.train()
-hogSVM.predict('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/26/1509808379_364_3_new_warped3.bmp')
+hogSVM.predict('/Users/dxw/Downloads/tf_car_license_dataset/train_images/training-set/26/1509808379_364_3_new_warped3.bmp')
 hogSVM.test()
 
