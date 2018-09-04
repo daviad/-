@@ -12,7 +12,7 @@ class HogSvm(object):
         self.test_data = Data_my(test_path, self.feature_func)
 
     def feature_func(self, src):
-        img = cv2.imread(src)
+        img = cv2.imread(src, cv2.COLORSPACE_GRAY)
         # Hog
         # 1.设置一些参数
         win_size = (16, 20)
@@ -46,8 +46,8 @@ class HogSvm(object):
     def train(self):
         print('create train data...')
         train_data = self.train_data.build_feature_label_nparray()
-        x = np.array(train_data[:,0][0], dtype=np.float32)
-        y = np.array(train_data[:,1], dtype=np.int32)
+        x = np.array(train_data[0], dtype=np.float32)
+        y = np.array(train_data[1], dtype=np.int32)
         print('train svm...')
         start = time.clock()
         self.config_svm()
@@ -59,38 +59,37 @@ class HogSvm(object):
         print('Running time: %.2f min' % ((end - start)/60))
 
     def predict(self, src):
-        # _svm = cv2.ml.SVM_load('svm.xml')
-        # des = self.build_hog(src)
-        # des = np.array(des, dtype=np.float32)
-        # p = _svm.predict(des.reshape(1, -1))
-        # print(p[1][0][0])
+        _svm = cv2.ml.SVM_load('svm.xml')
+        des = self.feature_func(src)
+        des = np.array(des, dtype=np.float32)
+        p = _svm.predict(des.reshape(1, -1))
+        print(p[1][0][0])
         pass
 
     def test(self):
         print('create test data...')
         test_data = self.test_data.build_feature_label_nparray()
-        # x = np.array(np.array(test_data[:,0]), dtype=np.float32)
-        # # x = x.reshape()
-        # y = np.array(test_data[:,1], dtype=np.int32)
-        # print('test svm...')
-        # start = time.clock()
-        # self.svm = cv2.ml.SVM_load('svm.xml')
-        # # 预测
-        # p = self.svm.predict(x)
-        # result = p[1]
-        # count = 0
-        # for i in range(0, result.size):
-        #     if int(result[i][0]) == y[i]:
-        #         count = count + 1
-        #
-        # precise = float(count)/float(result.size)
-        # print('precise:', precise)
-        # end = time.clock()
-        # print('Running time: %.2f min' % ((end - start)/60.0))
+        x = np.array(test_data[0], dtype=np.float32)
+        y = np.array(test_data[1], dtype=np.int32)
+        print('test svm...')
+        start = time.clock()
+        self.svm = cv2.ml.SVM_load('svm.xml')
+        # 预测
+        p = self.svm.predict(x)
+        result = p[1]
+        count = 0
+        for i in range(0, result.size):
+            if int(result[i][0]) == y[i]:
+                count = count + 1
+
+        precise = float(count)/float(result.size)
+        print('precise:', precise)
+        end = time.clock()
+        print('Running time: %.2f min' % ((end - start)/60.0))
         # p[1][0][0]才是label
 
 
-hogSVM = HogSvm('/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set/', '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/validation-set/')
+hogSVM = HogSvm('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set', '/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/validation-set/')
 hogSVM.train()
 # hogSVM.predict('/Users/dxw/Downloads/tf_car_license_dataset/train_images/training-set/26/1509808379_364_3_new_warped3.bmp')
 hogSVM.test()
