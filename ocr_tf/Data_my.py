@@ -2,6 +2,8 @@ import numpy as np
 import os
 import random
 
+import tensorflow as tf
+
 
 class Data_my:
     def __init__(self, path, feature_func):
@@ -48,8 +50,8 @@ class Data_my:
     def batch_next(self, count):
         start = self.batch_index
         self.batch_index = self.batch_index + count
-        if self.batch_index > self.sample.size:
-            self.batch_index = self.sample.size
+        if self.batch_index > self.sample[:, 1].size:
+            self.batch_index = self.sample[:, 1].size
 
         end = self.batch_index
         if end == start:
@@ -57,16 +59,16 @@ class Data_my:
             end = count
             self.batch_index = count
 
-        return self.sample[start:end]
+        return self.sample[start:end, :]
 
 
-a = [[1, 12, 3], [2, 12, 3], [3, 12, 3]]
-b = [1, 2, 1, 2]
-c = zip(a, b)
-e = list(c)
-print(e)
-random.shuffle(e)
-print(e)
+# a = [[1, 12, 3], [2, 12, 3], [3, 12, 3]]
+# b = [1, 2, 1, 2]
+# c = zip(a, b)
+# e = list(c)
+# print(e)
+# random.shuffle(e)
+# print(e)
 # f = zip(*c))
 # print(f)
 # f = np.array(e)
@@ -76,3 +78,13 @@ print(e)
 # # print(c[])
 # print(e[1:3])
 # print(e[1:3][0])
+
+
+# one-hot
+a = [1,2,3,5,7]
+one_hot = tf.one_hot(a,7)
+
+tf.global_variables_initializer()
+with tf.Session() as sess:
+    sess.run(one_hot)
+    print(one_hot)
