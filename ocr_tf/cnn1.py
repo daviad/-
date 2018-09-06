@@ -34,6 +34,31 @@ def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
                           strides=[1, 2, 2, 1], padding='SAME')
 
+
+def feature_func(src):
+    img = cv2.imread(src, 0)
+    #
+    # # Hog
+    # # 1.设置一些参数
+    # win_size = (16, 20)
+    # win_stride = (16, 20)
+    # block_size = (8, 10)
+    # block_stride = (4, 5)
+    # cell_size = (4, 5)
+    # n_bins = 9
+    #
+    # # 2.创建hog
+    # hog = cv2.HOGDescriptor(win_size, block_size, block_stride, cell_size, n_bins)
+    # hist = hog.compute(img, winStride=win_stride, padding=(0, 0))
+    # return hist.T.tolist()[0]  # 当矩阵是1 * n维的时候，经常会有tolist()[0]
+
+    img2 = np.reshape(img, [1, -1]).tolist()[0]
+    # img2 = np.reshape(img, [1, -1])
+    return img2  # 1280
+
+train_data = Data_my('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set', feature_func)
+train_data.build_feature_label_nparray()
+
 sess = tf.InteractiveSession()
 x = tf.placeholder(tf.float32, [None, 1280])
 x_image = tf.reshape(x, [-1, 40, 32, 1])
@@ -53,17 +78,17 @@ b_conv2 = bias_variable([64])
 h_conv2 = tf.nn.elu(conv2d(h_pool1, W_conv2) + b_conv2)
 h_pool2 = max_pool_2x2(h_conv2)
 
-W_fc1 = weight_variable([10 * 8 * 64, 1024])
-b_fc1 = bias_variable([1024])
+W_fc1 = weight_variable([10 * 8 * 64, train_data.category * 10])
+b_fc1 = bias_variable([train_data.category * 10])
 h_pool2_flat = tf.reshape(h_pool2, [-1, 10 * 8 * 64])
 h_fc1 = tf.nn.elu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 keep_prob = tf.placeholder(tf.float32)
 h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-W_fc2 = weight_variable([1024, 10])
-b_fc2 = bias_variable([10])
+W_fc2 = weight_variable([train_data.category * 10, train_data.category])
+b_fc2 = bias_variable([train_data.category])
 y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
-y_ = tf.placeholder(tf.float32, [None, 10])
+y_ = tf.placeholder(tf.float32, [None, train_data.category])
 
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv), reduction_indices=[1]))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
@@ -72,30 +97,6 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 sess.run(tf.global_variables_initializer())
 
 
-def feature_func(src):
-    img = cv2.imread(src, 0)
-
-    # # Hog
-    # # 1.设置一些参数
-    # win_size = (16, 20)
-    # win_stride = (16, 20)
-    # block_size = (8, 10)
-    # block_stride = (4, 5)
-    # cell_size = (4, 5)
-    # n_bins = 9
-    #
-    # # 2.创建hog
-    # hog = cv2.HOGDescriptor(win_size, block_size, block_stride, cell_size, n_bins)
-    # hist = hog.compute(img, winStride=win_stride, padding=(0, 0))
-    # return hist.T.tolist()[0]  # 当矩阵是1 * n维的时候，经常会有tolist()[0]
-
-    img2 = np.reshape(img, [1, -1]).tolist()[0]
-    # img2 = np.reshape(img, [1, -1])
-    return img2  # 1280
-
-
-train_data = Data_my('/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set', feature_func)
-train_data.build_feature_label_nparray()
 for i in range(100):
     batch = train_data.batch_next(50)
     if i % 100 == 0:

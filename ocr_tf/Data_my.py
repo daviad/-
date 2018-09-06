@@ -11,6 +11,7 @@ class Data_my:
         self.sample = None
         self.batch_index = 0
         self.feature_func = feature_func
+        self.category = 0
 
     # 创建 路径 键值对
     def build_path_label_dic(self):
@@ -35,6 +36,7 @@ class Data_my:
         label_path_dic = self.build_path_label_dic()
         # data = []
         # label = []
+        self.category = len(label_path_dic)
         sum_tmp = []
         row = 0
         for key, values in label_path_dic.items():
@@ -74,9 +76,9 @@ class Data_my:
 
         feature = np.array(tmp[:, 0:(col -1)], dtype=np.float32)
         label = tmp[:, (col - 1):col]
-        one_hot = tf.one_hot(label, 10, dtype=tf.float32)
-        one_hot = one_hot.eval().flatten().reshape(-1,10)
-        t = (feature,one_hot)
+        one_hot = tf.one_hot(label, self.category, dtype=tf.float32)
+        one_hot = one_hot.eval().flatten().reshape(-1, self.category)
+        t = (feature, one_hot)
         return t
 
 
