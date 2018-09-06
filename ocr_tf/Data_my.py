@@ -33,25 +33,36 @@ class Data_my:
 
     def build_feature_label_nparray(self):
         label_path_dic = self.build_path_label_dic()
-        data = []
-        label = []
+        # data = []
+        # label = []
+        sum_tmp = []
+        row = 0
         for key, values in label_path_dic.items():
             for v in values:
-                data.append(self.feature_func(v))
-                label.append(key)
+                row = row + 1
+                # data.append((self.feature_func(v)))
+                # label.append(key)
+                sum_tmp.extend(self.feature_func(v))
+                sum_tmp.append(key)
         # return data, label
-        tmp = list(zip(data, label))
-        self.sample = np.array(tmp)
+        tmp = np.array(sum_tmp)
+        self.sample = tmp.reshape(row, -1)
         np.random.shuffle(self.sample)
-        feature = self.sample[:, 0].tolist()
-        label = self.sample[:, 1].tolist()
-        return feature, label
+        # tmp = list(zip(data, label))
+        # random.shuffle(tmp)
+        # self.sample = tmp
+        # tmp_arr = np.array(tmp)
+        # feature = tmp_arr[:, 0].tolist()
+        # label = tmp_arr[:, 1].tolist()
+        # return feature, label
 
     def batch_next(self, count):
+        row = self.sample.shape[0]
+        col = self.sample.shape[1]
         start = self.batch_index
         self.batch_index = self.batch_index + count
-        if self.batch_index > self.sample[:, 1].size:
-            self.batch_index = self.sample[:, 1].size
+        if self.batch_index > row:
+            self.batch_index = row
 
         end = self.batch_index
         if end == start:
@@ -59,7 +70,14 @@ class Data_my:
             end = count
             self.batch_index = count
 
-        return self.sample[start:end, :]
+        tmp = self.sample[start:end, :]
+
+        feature = np.array(tmp[:, 0:(col -1)], dtype=np.float32)
+        label = tmp[:, (col - 1):col]
+        one_hot = tf.one_hot(label, 10, dtype=tf.float32)
+        one_hot = one_hot.eval().flatten().reshape(-1,10)
+        t = (feature,one_hot)
+        return t
 
 
 # a = [[1, 12, 3], [2, 12, 3], [3, 12, 3]]
@@ -80,11 +98,35 @@ class Data_my:
 # print(e[1:3][0])
 
 
-# one-hot
-a = [1,2,3,5,7]
-one_hot = tf.one_hot(a,7)
+# # one-hot
+# a = [1,2,3,5,7]
+# one_hot = tf.one_hot(a,7)
+#
+# tf.global_variables_initializer()
+# with tf.Session() as sess:
+#     sess.run(one_hot)
+#     print(one_hot)
 
-tf.global_variables_initializer()
-with tf.Session() as sess:
-    sess.run(one_hot)
-    print(one_hot)
+a0 = [1,1,1]
+a1 = [2,2,2]
+a2 = [1,1,1]
+
+label = [0,1,0]
+
+d = np.array([])
+
+c = np.append(a0,label[0])
+c = np.append(c,a1)
+c = np.append(c,label[1])
+c = np.append(c,a2)
+c = np.append(c,label[2])
+print(c)
+# c = []
+# c.append(a0)
+# c.append(a1)
+# c.append(a2)
+
+# tmp = list(zip(c, label))
+# random.shuffle(tmp)
+# d = np.array(tmp)
+# print(d)

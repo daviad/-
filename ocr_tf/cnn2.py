@@ -118,8 +118,8 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy) # 使用adam�
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1)) # 计算准确度
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 sess.run(tf.global_variables_initializer()) # 变量初始化
-# for i in range(1000):
-for i in range(1):
+for i in range(1000):
+# for i in range(1):
     batch = mnist.train.next_batch(50)
     if i%100 == 0:
         print(batch[1].shape)
