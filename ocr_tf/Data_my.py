@@ -109,20 +109,20 @@ class Data_my:
 #     sess.run(one_hot)
 #     print(one_hot)
 
-a0 = [1,1,1]
-a1 = [2,2,2]
-a2 = [1,1,1]
-
-label = [0,1,0]
-
-d = np.array([])
-
-c = np.append(a0,label[0])
-c = np.append(c,a1)
-c = np.append(c,label[1])
-c = np.append(c,a2)
-c = np.append(c,label[2])
-print(c)
+# a0 = [1,1,1]
+# a1 = [2,2,2]
+# a2 = [1,1,1]
+#
+# label = [0,1,0]
+#
+# d = np.array([])
+#
+# c = np.append(a0,label[0])
+# c = np.append(c,a1)
+# c = np.append(c,label[1])
+# c = np.append(c,a2)
+# c = np.append(c,label[2])
+# print(c)
 # c = []
 # c.append(a0)
 # c.append(a1)
@@ -132,3 +132,7 @@ print(c)
 # random.shuffle(tmp)
 # d = np.array(tmp)
 # print(d)
+
+# x = [[0]*2]
+# input_images = np.array([[0] * 2 for i in range(3)])
+# print(input_images)

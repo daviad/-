@@ -122,7 +122,7 @@ for i in range(1000):
 # for i in range(1):
     batch = mnist.train.next_batch(50)
     if i%100 == 0:
-        print(batch[1].shape)
+        # print(batch[1].shape)
         train_accuracy = accuracy.eval(feed_dict={
             x:batch[0], y_: batch[1], keep_prob: 1.0})
         print("step %d, training accuracy %g"%(i, train_accuracy))
