@@ -30,11 +30,10 @@ def RNN(x, weights, biase):
     print(output)
     print("output[:,-1,:]:")
     print(output[:,-1,:])
-    # return tf.nn.softmax(tf.matmul(output[:,-1,:],weights)+bias,1)
     return tf.matmul(output[:,-1,:],weights)+bias
 
 predy = RNN(x, weights, bias)
-cost=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=predy,labels=y))
+cost=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=predy,labels=y))
 train=tf.train.AdamOptimizer(train_rate).minimize(cost)
 
 correct_pred=tf.equal(tf.argmax(predy,1),tf.argmax(y,1))
@@ -47,26 +46,11 @@ step = 1
 
 def feature_func(src):
     img = cv2.imread(src, 0)
-    #
-    # # Hog
-    # # 1.设置一些参数
-    # win_size = (16, 20)
-    # win_stride = (16, 20)
-    # block_size = (8, 10)
-    # block_stride = (4, 5)
-    # cell_size = (4, 5)
-    # n_bins = 9
-    #
-    # # 2.创建hog
-    # hog = cv2.HOGDescriptor(win_size, block_size, block_stride, cell_size, n_bins)
-    # hist = hog.compute(img, winStride=win_stride, padding=(0, 0))
-    # return hist.T.tolist()[0]  # 当矩阵是1 * n维的时候，经常会有tolist()[0]
     x ,img2 = cv2.threshold(img, 230, 1, cv2.THRESH_BINARY)
     img3 = np.reshape(img2, [1, -1]).tolist()[0]
-    # img2 = np.reshape(img, [1, -1])
     return img3  # 1280
 
-train_data = Data_my('/Users/dingxiuwei/Downloads/tf_car_license_dataset/train_images/training-set/', feature_func)
+train_data = Data_my('/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set', feature_func)
 train_data.build_feature_label_nparray()
 
 # testx,testy = train_data.next_batch(batch_size)

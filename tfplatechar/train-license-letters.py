@@ -5,7 +5,7 @@ import sys
 import os
 import time
 import random
-
+import cv2
 import numpy as np
 import tensorflow as tf
 
@@ -49,7 +49,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第一次遍历图片目录是为了获取图片总数
     input_count = 0
     for i in range(0 + 10, NUM_CLASSES + 10):
-        dir = './train_images/training-set/letters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set/letters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 input_count += 1
@@ -61,28 +61,29 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第二次遍历图片目录是为了生成图片数据和标签
     index = 0
     for i in range(0 + 10, NUM_CLASSES + 10):
-        dir = './train_images/training-set/letters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set/letters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 filename = dir + filename
                 img = Image.open(filename)
                 width = img.size[0]
                 height = img.size[1]
-                for h in range(0, height):
-                    for w in range(0, width):
-                        # 通过这样的处理，使数字的线条变细，有利于提高识别准确率
-                        if img.getpixel((w, h)) > 230:
-                            input_images[index][w + h * width] = 0
-                        else:
-                            input_images[index][w + h * width] = 1
+                # for h in range(0, height):
+                #     for w in range(0, width):
+                #         # 通过这样的处理，使数字的线条变细，有利于提高识别准确率
+                #         if img.getpixel((w, h)) > 230:
+                #             input_images[index][w + h * width] = 0
+                #         else:
+                #             input_images[index][w + h * width] = 1
                 # print ("i=%d, index=%d" % (i, index))
+                input_images = cv2.imread(filename, 0)
                 input_labels[index][i - 10] = 1
                 index += 1
 
     # 第一次遍历图片目录是为了获取图片总数
     val_count = 0
     for i in range(0 + 10, NUM_CLASSES + 10):
-        dir = './train_images/validation-set/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/validation-set/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 val_count += 1
@@ -94,20 +95,21 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第二次遍历图片目录是为了生成图片数据和标签
     index = 0
     for i in range(0 + 10, NUM_CLASSES + 10):
-        dir = './train_images/validation-set/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/validation-set/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 filename = dir + filename
                 img = Image.open(filename)
                 width = img.size[0]
                 height = img.size[1]
-                for h in range(0, height):
-                    for w in range(0, width):
-                        # 通过这样的处理，使数字的线条变细，有利于提高识别准确率
-                        if img.getpixel((w, h)) > 230:
-                            val_images[index][w + h * width] = 0
-                        else:
-                            val_images[index][w + h * width] = 1
+                # for h in range(0, height):
+                #     for w in range(0, width):
+                #         # 通过这样的处理，使数字的线条变细，有利于提高识别准确率
+                #         if img.getpixel((w, h)) > 230:
+                #             val_images[index][w + h * width] = 0
+                #         else:
+                #             val_images[index][w + h * width] = 1
+                val_images = cv2.imread(filename, 0)
                 val_labels[index][i - 10] = 1
                 index += 1
 
@@ -245,13 +247,13 @@ if __name__ == '__main__' and sys.argv[1] == 'predict':
             height = img.size[1]
 
             img_data = [[0] * SIZE for i in range(1)]
-            for h in range(0, height):
-                for w in range(0, width):
-                    if img.getpixel((w, h)) < 190:
-                        img_data[0][w + h * width] = 1
-                    else:
-                        img_data[0][w + h * width] = 0
-
+            # for h in range(0, height):
+            #     for w in range(0, width):
+            #         if img.getpixel((w, h)) < 190:
+            #             img_data[0][w + h * width] = 1
+            #         else:
+            #             img_data[0][w + h * width] = 0
+            img_data = cv2.imread(path, 0)
             result = sess.run(conv, feed_dict={x: np.array(img_data), keep_prob: 1.0})
 
             max1 = 0

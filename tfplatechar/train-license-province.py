@@ -47,7 +47,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第一次遍历图片目录是为了获取图片总数
     input_count = 0
     for i in range(0, NUM_CLASSES):
-        dir = './train_images/training-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 input_count += 1
@@ -59,7 +59,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第二次遍历图片目录是为了生成图片数据和标签
     index = 0
     for i in range(0, NUM_CLASSES):
-        dir = './train_images/training-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/training-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 filename = dir + filename
@@ -79,7 +79,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第一次遍历图片目录是为了获取图片总数
     val_count = 0
     for i in range(0, NUM_CLASSES):
-        dir = './train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 val_count += 1
@@ -91,7 +91,7 @@ if __name__ == '__main__' and sys.argv[1] == 'train':
     # 第二次遍历图片目录是为了生成图片数据和标签
     index = 0
     for i in range(0, NUM_CLASSES):
-        dir = './train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
+        dir = '/Users/dxw/Downloads/tf_car_license_dataset/tf_car_license_dataset/train_images/validation-set/chinese-characters/%s/' % i  # 这里可以改成你自己的图片目录，i为分类标签
         for rt, dirs, files in os.walk(dir):
             for filename in files:
                 filename = dir + filename
