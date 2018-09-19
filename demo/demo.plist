@@ -14,6 +14,19 @@
 					<string>https://github.com/daviad/MLDemo/tree/master/demo/demo.ipa</string>
 				</dict>
 				
+				<dict>
+					<key>kind</key>
+					<string>display-image</string>
+					<key>url</key>
+					<string>https://github.com/daviad/MLDemo/tree/master/demo/57.png</string>
+				</dict>
+				<dict>
+					<key>kind</key>
+					<string>full-size-image</string>
+					<key>url</key>
+					<string>https://github.com/daviad/MLDemo/tree/master/demo/512.png</string>
+				</dict>
+				
 			</array>
 			<key>metadata</key>
 			<dict>
